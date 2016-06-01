@@ -1,6 +1,6 @@
 main: io.github.himmelt.limitime.Limitime
 name: Limitime
-version: 0.01
+version: 1.7.10-0.1
 author: Himmelt
 website: http://dev.bukkit.org/profiles/Himmelt/
 description: Limit time using for items.format [lit:duration:2333|limitime:25555355]

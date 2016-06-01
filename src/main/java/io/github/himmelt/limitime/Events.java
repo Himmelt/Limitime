@@ -20,6 +20,7 @@ public class Events implements Listener {
     public void onPlayerAction(PlayerInteractEvent event) {
         logger.info("[Limitime]:onPlayerAction");
         Player player = event.getPlayer();
+        ItemStack armors[] = player.getInventory().getArmorContents();
         if (player.getItemInHand().hasItemMeta()) {
             ItemStack itemStack = player.getItemInHand();
             ItemMeta itemMeta = itemStack.getItemMeta();
