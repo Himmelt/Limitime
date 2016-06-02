@@ -7,4 +7,5 @@ description: Limit time using for items.
 
 commands:
   limitime:
-    description: "添加时限lore的格式为[duration:+1d+2m+3h],时限部分可以为:+1m,+1m+1d,+1d+1m+1h,+1d+1d,+1m+1m+1m,+1h+1h+1d,为叠加状态."
+    description: 物品限时使用
+    usage: /limitime
