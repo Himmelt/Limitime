@@ -10,69 +10,48 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Events implements Listener {
-
-    public static Logger logger = Logger.getLogger("Limitime");
-
     @EventHandler
     public void onPlayerAction(PlayerInteractEvent event) {
-        logger.info("[Limitime]:onPlayerAction");
         Player player = event.getPlayer();
-        ItemStack armors[] = player.getInventory().getArmorContents();
-        if (player.getItemInHand().hasItemMeta()) {
-            ItemStack itemStack = player.getItemInHand();
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            logger.info("[Limitime]:hasItemMeta" + itemMeta);
-            List<String> itemLore = itemMeta.getLore();
-            String lore;
-            for (int i = 0; i < itemLore.size(); i++) {
-                lore = itemLore.get(i);
-                logger.info("[Limitime]:lore-" + i + lore);
-                if (lore.contains("lit:duration:")) {
-                    logger.info("[Limitime]:duration");
-                    long time_now = System.currentTimeMillis() / 60000;//单位：小时
-                    if (lore.contains(":limitime:")) {
-                        long limitime = getLimitime(lore);
-                        logger.info("[Limitime]:time" + time_now + ":" + limitime);
-                        if (limitime < time_now) {
-                            logger.info("[Limitime]:timeout");
-                            player.setItemInHand(new ItemStack(Material.AIR));
-                        }
-                    } else {
-                        logger.info("[Limitime]:newlimit");
-                        long duration = getDuration(lore);
-                        lore = lore + ":limitime:" + Long.toString(time_now + duration);
-                        logger.info("[Limitime]:newlore-" + lore);
-                        itemLore.set(i, lore);
+        ItemStack[] itemStacks = new ItemStack[5];
+        ItemStack[] armors = player.getInventory().getArmorContents();
+        itemStacks[0] = player.getItemInHand();
+        itemStacks[1] = armors[0];
+        itemStacks[2] = armors[1];
+        itemStacks[3] = armors[2];
+        itemStacks[4] = armors[3];
+
+        for (int i = 0; i < itemStacks.length; i++) {
+            if (itemStacks[i].hasItemMeta()) {
+                ItemMeta itemMeta = itemStacks[i].getItemMeta();
+                List<String> itemLore = itemMeta.getLore();
+                for (int j = 0; j < itemLore.size(); j++) {
+                    if (itemLore.get(j).contains("duration")) {
+                        itemLore.set(j, "§e§l[limitime:" + Limit.getLimit(itemLore.get(j)) + "]");
                         itemMeta.setLore(itemLore);
-                        itemStack.setItemMeta(itemMeta);
-                        player.setItemInHand(itemStack);
+                        itemStacks[i].setItemMeta(itemMeta);
+                        break;
+                    } else if (itemLore.get(j).contains("limitime")) {
+                        if (Limit.isDeadline(itemLore.get(j))) {
+                            Log.info("Time Out!! " + player.getDisplayName() + "'s "
+                                    + itemStacks[i].getItemMeta().getDisplayName()
+                                    + "[" + itemStacks[i].getType() + " is GONE!");
+                            itemStacks[i] = new ItemStack(Material.AIR);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
-    }
 
-    private long getDuration(String lore) {
-        long duration = 0;
-        try {
-            duration = Long.parseLong(lore.substring(lore.indexOf("lit:duration:") + 13));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return duration;
-    }
+        armors[0] = itemStacks[1];
+        armors[1] = itemStacks[2];
+        armors[2] = itemStacks[3];
+        armors[3] = itemStacks[4];
 
-    private long getLimitime(String lore) {
-        long limitime = 0;
-        try {
-            limitime = Long.parseLong(lore.substring(lore.indexOf(":limitime:") + 10));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return limitime;
+        player.setItemInHand(itemStacks[0]);
+        player.getInventory().setArmorContents(armors);
     }
 }

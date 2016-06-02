@@ -1,6 +1,10 @@
-main: io.github.himmelt.limitime.Limitime
+main: io.github.himmelt.limitime.Plugin
 name: Limitime
 version: 1.7.10-0.1
 author: Himmelt
 website: http://dev.bukkit.org/profiles/Himmelt/
-description: Limit time using for items.format [lit:duration:2333|limitime:25555355]
+description: Limit time using for items.
+
+commands:
+  limitime:
+    description: "添加时限lore的格式为[duration:+1d+2m+3h],时限部分可以为:+1m,+1m+1d,+1d+1m+1h,+1d+1d,+1m+1m+1m,+1h+1h+1d,为叠加状态."

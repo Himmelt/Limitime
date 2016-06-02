@@ -3,26 +3,25 @@ package io.github.himmelt.limitime;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Logger;
+public final class Plugin extends JavaPlugin {
 
-public final class Limitime extends JavaPlugin {
-
-    public static Logger logger = Logger.getLogger("Limitime");
-    public static Limitime plugin;
+    public static Plugin plugin;
 
     @Override
     public void onLoad() {
         plugin = this;
+        Log.info("Limitime is loaded!");
     }
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(new Events(), this);
+        Log.info("Limitime is enabled!");
     }
 
     @Override
     public void onDisable() {
-        // 插件卸载时要执行的代码（略）
         this.getServer().getScheduler().cancelAllTasks();
+        Log.info("Limitime is disabled!");
     }
 }
