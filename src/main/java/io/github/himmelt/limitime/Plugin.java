@@ -30,9 +30,10 @@ public final class Plugin extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("limitime")) {
-            //如果玩家输入了/basic则执行如下内容...
-            sender.sendMessage("§a========§e§l物品限时插件(v0.1)§r§a========");
+            //如果玩家输入了/limitime则执行如下内容...
+            sender.sendMessage("§a========§e§l物品限时插件(v0.2)§r§a========");
             sender.sendMessage("§a===§ehttps://github.com/Himmelt/Limitime§r§a===");
+            sender.sendMessage("§a===§4§l只对第一条包含时限的lore有效果§r§a===");
             sender.sendMessage("§e添加时限lore的格式为:");
             sender.sendMessage("§a§l[duration:+1d+2m+3h]");
             sender.sendMessage("§6时限部分可以为:");

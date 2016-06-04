@@ -1,6 +1,6 @@
 main: io.github.himmelt.limitime.Plugin
 name: Limitime
-version: 1.7.10-0.1
+version: 1.7.10-0.2
 author: Himmelt
 website: http://dev.bukkit.org/profiles/Himmelt/
 description: Limit time using for items.

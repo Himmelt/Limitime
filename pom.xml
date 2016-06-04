@@ -6,7 +6,7 @@
     <groupId>io.github.himmelt.limitime</groupId>
     <artifactId>limitime</artifactId>
     <name>Limitime</name>
-    <version>1.7.10-0.1</version>
+    <version>1.7.10-0.2</version>
     <url>https://github.com/Himmelt/Limitime</url>
 
     <build>
