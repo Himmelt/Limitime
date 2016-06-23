@@ -21,3 +21,6 @@ A Minecraft Bukkit Plugin, which adds using duration to item with lore.
 ```
 
 以上时间全部为叠加状态
+
++ 待添加功能: 指令 /limitime delay [+/-时限]
+                 /limitime cancel
