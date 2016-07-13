@@ -1,8 +1,8 @@
-main: io.github.himmelt.limitime.Plugin
 name: Limitime
-version: 1.7.10-0.2
+version: 1.7.10-0.3.0
 author: Himmelt
-website: http://dev.bukkit.org/profiles/Himmelt/
+main: org.soraworld.limitime.Limitime
+website: https://github.com/SoraWorld/Limitime
 description: Limit time using for items.
 
 commands:

@@ -1,13 +1,14 @@
-package io.github.himmelt.limitime;
-/* Created by Kami on 2016/5/27.*/
+package org.soraworld.limitime;
+
+/* Created by Himmelt on 2016/7/13.*/
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class Plugin extends JavaPlugin {
+public class Limitime extends JavaPlugin {
 
-    public static Plugin plugin;
+    public static Limitime plugin;
 
     @Override
     public void onLoad() {
@@ -43,4 +44,5 @@ public final class Plugin extends JavaPlugin {
         }
         return false;
     }
+
 }

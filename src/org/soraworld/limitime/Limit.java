@@ -1,4 +1,5 @@
-package io.github.himmelt.limitime;
+package org.soraworld.limitime;
+
 /* Created by Kami on 2016/6/1.*/
 
 import java.text.ParseException;
