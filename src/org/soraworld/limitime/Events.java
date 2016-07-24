@@ -34,7 +34,7 @@ public class Events implements Listener {
                     break;
                 } else if (itemLore.get(j).contains("limitime")) {
                     if (Limit.isDeadline(itemLore.get(j))) {
-                        Log.info("Time Out!! " + player.getDisplayName() + "'s "
+                        Log.info("Time Out!! " + player.getName() + "'s "
                                 + itemHeld.getItemMeta().getDisplayName()
                                 + "[" + itemHeld.getType() + "] is GONE!");
                         // 确认已到达时限，阻止事件并消除物品
