@@ -1,6 +1,4 @@
-package org.soraworld.limitime;
-
-/* Created by Kami on 2016/5/29.*/
+package org.soraworld.lime;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

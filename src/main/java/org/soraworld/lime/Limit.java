@@ -1,6 +1,4 @@
-package org.soraworld.limitime;
-
-/* Created by Kami on 2016/6/1.*/
+package org.soraworld.lime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

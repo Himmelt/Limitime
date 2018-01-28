@@ -1,6 +1,4 @@
-package org.soraworld.limitime;
-
-/* Created by Himmelt on 2016/7/13.*/
+package org.soraworld.lime;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
