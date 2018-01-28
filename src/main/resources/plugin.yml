@@ -1,11 +1,18 @@
 name: Limitime
-version: 1.7.10-0.3.1
+version: 1.7.10-0.4.1
 author: Himmelt
-main: org.soraworld.limitime.Limitime
-website: https://github.com/SoraWorld/Limitime
+main: org.soraworld.lime.Limitime
+website: https://github.com/Himmelt/Limitime
 description: Limit time using for items.
 
 commands:
-  limitime:
-    description: 物品限时使用
-    usage: /limitime
+  lime:
+    description: "Limitime - https://github.com/Himmelt/Limitime"
+    usage: "[Limitime] /lime save|reload|lang|..."
+    permission: lime.admin
+    permission-message: "[Limitime] You have no permission <lime.admin>"
+permissions:
+  lime.admin:
+    default: op
+  lime.use:
+    default: op
