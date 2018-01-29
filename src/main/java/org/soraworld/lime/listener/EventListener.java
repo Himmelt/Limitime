@@ -5,12 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.soraworld.lime.Limitime;
 import org.soraworld.lime.config.Config;
-
-import java.util.List;
+import org.soraworld.lime.util.LimitUtils;
 
 public class EventListener implements Listener {
 
@@ -20,52 +20,36 @@ public class EventListener implements Listener {
         this.config = config;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerUsingItem(PlayerInteractEvent event) {
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void on(PlayerItemDamageEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = player.getItemInHand();
-        item = analysis(item);
-        if (item != null) {
-            player.setItemInHand(item);
-            event.setCancelled(true);
-        }
-
-        ItemStack[] armors = player.getInventory().getArmorContents();
-        for (int i = 0; armors != null && i < armors.length; i++) {
-            ItemStack armor = analysis(armors[i]);
-            if (armor != null) {
-                armors[i] = armor;
-                event.setCancelled(true);
-            }
-        }
-        player.getInventory().setArmorContents(armors);
+        player.setItemInHand(LimitUtils.analysis(player, player.getItemInHand(), false));
+        solveArmors(player);
     }
 
-    private static ItemStack analysis(ItemStack item) {
-        if (item != null) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                List<String> lore = meta.getLore();
-                for (int i = 0; lore != null && i < lore.size(); i++) {
-                    String line = lore.get(i);
-                    if (line.contains("duration")) {
-                        lore.set(i, "[deadline:{time}]");
-                        meta.setLore(lore);
-                        item.setItemMeta(meta);
-                        return item;
-                    }
-                    if (line.contains("deadline")) {
-                        if (Limitime.isDead(line)) {
-                            item.setAmount(0);
-                            return item;
-                            // ??? player.setItemInHand(new ItemStack(Material.AIR));
-                        }
-                        return null;
-                    }
-                }
-            }
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        int pre = event.getPreviousSlot(), now = event.getNewSlot();
+        Inventory inv = player.getInventory();
+        inv.setItem(pre, LimitUtils.analysis(player, inv.getItem(pre), true));
+        inv.setItem(now, LimitUtils.analysis(player, inv.getItem(now), true));
+        solveArmors(player);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        player.setItemInHand(LimitUtils.analysis(player, player.getItemInHand(), false));
+        solveArmors(player);
+    }
+
+    private void solveArmors(Player player) {
+        ItemStack[] armors = player.getInventory().getArmorContents();
+        for (int i = 0; armors != null && i < armors.length; i++) {
+            armors[i] = LimitUtils.analysis(player, armors[i], false);
         }
-        return null;
+        player.getInventory().setArmorContents(armors);
     }
 
 }
