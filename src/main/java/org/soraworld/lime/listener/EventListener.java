@@ -21,18 +21,27 @@ public class EventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerUsing(PlayerInteractEvent event) {
+    public void onPlayerUsingItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getItemInHand();
-        if (check(item)) event.setCancelled(true);
+        item = analysis(item);
+        if (item != null) {
+            player.setItemInHand(item);
+            event.setCancelled(true);
+        }
 
         ItemStack[] armors = player.getInventory().getArmorContents();
-        for (int i = 0; armors != null && i < armors.length; i++) if (check(armors[i])) event.setCancelled(true);
-
-        // ?? player.getInventory().setArmorContents(armors);
+        for (int i = 0; armors != null && i < armors.length; i++) {
+            ItemStack armor = analysis(armors[i]);
+            if (armor != null) {
+                armors[i] = armor;
+                event.setCancelled(true);
+            }
+        }
+        player.getInventory().setArmorContents(armors);
     }
 
-    private static boolean check(ItemStack item) {
+    private static ItemStack analysis(ItemStack item) {
         if (item != null) {
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
@@ -43,20 +52,20 @@ public class EventListener implements Listener {
                         lore.set(i, "[deadline:{time}]");
                         meta.setLore(lore);
                         item.setItemMeta(meta);
-                        // ?? player.setItemInHand(item);
-                        return true;
-                    } else if (line.contains("deadline")) {
+                        return item;
+                    }
+                    if (line.contains("deadline")) {
                         if (Limitime.isDead(line)) {
                             item.setAmount(0);
-                            return true;
+                            return item;
                             // ??? player.setItemInHand(new ItemStack(Material.AIR));
                         }
-                        return false;
+                        return null;
                     }
                 }
             }
         }
-        return false;
+        return null;
     }
 
 }
