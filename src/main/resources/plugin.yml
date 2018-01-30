@@ -14,5 +14,3 @@ commands:
 permissions:
   lime.admin:
     default: op
-  lime.use:
-    default: op

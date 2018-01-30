@@ -20,11 +20,11 @@ public class EventListener implements Listener {
         this.config = config;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void on(PlayerItemDamageEvent event) {
         Player player = event.getPlayer();
         player.setItemInHand(LimitUtils.analysis(player, player.getItemInHand(), false));
-        solveArmors(player);
+        //solveArmors(player);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -37,11 +37,11 @@ public class EventListener implements Listener {
         solveArmors(player);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         player.setItemInHand(LimitUtils.analysis(player, player.getItemInHand(), false));
-        solveArmors(player);
+        //solveArmors(player);
     }
 
     private void solveArmors(Player player) {

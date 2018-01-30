@@ -1,6 +1,5 @@
 package org.soraworld.lime.util;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,13 +28,13 @@ public class LimitUtils {
         return val;
     }
 
-    private static long duration(String duration) {
+    public static long duration(String duration) {
         long time = 0;
         Matcher matcher = PATTERN.matcher(duration);
         while (matcher.find()) {
             time += parse(matcher.group());
         }
-        return time;
+        return time * 60000;
     }
 
     private static boolean deadline(String deadline) {
@@ -53,29 +52,26 @@ public class LimitUtils {
     }
 
     public static ItemStack analysis(Player player, ItemStack item, boolean onlyCheck) {
-        if (item != null) {
+        if (item != null && item.getItemMeta() != null) {
             ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                List<String> lore = meta.getLore();
-                for (int i = 0; lore != null && i < lore.size(); i++) {
-                    String line = lore.get(i);
-                    Date now = new Date();
-                    Matcher matcher = DEADLINE.matcher(line);
-                    if (matcher.find() && deadline(matcher.group())) {
-                        ServerUtils.send(player, "your item is dead ,server will cycle it.");
-                        return null;
-                    }
-                    if (!onlyCheck) {
-                        matcher = DURATION.matcher(line);
-                        if (matcher.find()) {
-                            now.setTime(now.getTime() + duration(matcher.group()) * 60000);
-                            String deadline = DATE_FORMAT.format(now);
-                            lore.set(i, ChatColor.YELLOW + "[deadline:" + deadline + "]");
-                            meta.setLore(lore);
-                            item.setItemMeta(meta);
-                            ServerUtils.send(player, "set deadline:" + deadline + " for your item");
-                            return item;
-                        }
+            List<String> lore = meta.getLore();
+            for (int i = 0; lore != null && i < lore.size(); i++) {
+                String line = lore.get(i);
+                Matcher matcher = DEADLINE.matcher(line);
+                if (matcher.find() && deadline(matcher.group())) {
+                    ServerUtils.send(player, "your item is dead ,server will cycle it.");
+                    return null;
+                }
+                if (!onlyCheck) {
+                    matcher = DURATION.matcher(line);
+                    if (matcher.find()) {
+                        Date date = new Date();
+                        date.setTime(date.getTime() + duration(matcher.group()));
+                        lore.set(i, deadLore(date));
+                        meta.setLore(lore);
+                        item.setItemMeta(meta);
+                        ServerUtils.send(player, "set deadline:" + DATE_FORMAT.format(date) + " for your item");
+                        return item;
                     }
                 }
             }
@@ -83,4 +79,21 @@ public class LimitUtils {
         return item;
     }
 
+    public static String deadLore(long time) {
+        return "[deadline:" + DATE_FORMAT.format(new Date(time)) + "]";
+    }
+
+    public static String deadLore(Date date) {
+        return "[deadline:" + DATE_FORMAT.format(date) + "]";
+    }
+
+    public static String duraLore(String duration) {
+        return "[duration:" + duration + "]";
+    }
+
+    public static void setLore(Player player, ItemStack item, ItemMeta meta, List<String> lore) {
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        player.setItemInHand(item);
+    }
 }
