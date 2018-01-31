@@ -4,3 +4,4 @@
 language: "current language is: %s ."
 configSaved: "config file saved."
 configReloaded: "config file reloaded."
+deathGone: "forbid item's last using is: %s."

@@ -4,3 +4,4 @@
 language: "当前语言为: %s ."
 configSaved: "配置文件已保存."
 configReloaded: "配置文件已重载."
+deathGone: "阻止已过时物品的最后一次使用为: %s."

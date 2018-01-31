@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommandLime extends IICommand {
+public class CommandLimit extends IICommand {
 
-    public CommandLime(String name, final Plugin plugin, final Config config) {
+    public CommandLimit(String name, final Plugin plugin, final Config config) {
         super(name);
         addSub(new IICommand("save") {
             @Override
@@ -52,6 +52,30 @@ public class CommandLime extends IICommand {
                 return true;
             }
         });
+        addSub(new IICommand("death") {
+            @Override
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
+                if (args.size() == 1) {
+                    switch (args.get(0)) {
+                        case "true":
+                            config.deathGone(true);
+                            break;
+                        case "false":
+                            config.deathGone(false);
+                            break;
+                        default:
+                            ServerUtils.send(sender, getUsage());
+                            break;
+                    }
+                } else ServerUtils.send(sender, LangKeys.format("deathGone", config.deathGone()));
+                return true;
+            }
+
+            @Override
+            public String getUsage() {
+                return ChatColor.GOLD + "/limit death [true|false]";
+            }
+        });
         addSub(new IICommand("append", "app", "add") {
 
             private final Pattern PATTERN = Pattern.compile("([+-]\\d+[mhd])+");
@@ -79,7 +103,7 @@ public class CommandLime extends IICommand {
                                     if (mc.find()) {
                                         try {
                                             Date date = DATE_FORMAT.parse(mc.group());
-                                            date.setTime(date.getTime() + LimitUtils.duration(args.get(0)));
+                                            date.setTime(date.getTime() + LimitUtils.limitime(args.get(0)));
                                             lore.set(i, LimitUtils.deadLore(date));
                                             LimitUtils.setLore(player, item, meta, lore);
                                             ServerUtils.send(player, "append deadline");
@@ -95,18 +119,18 @@ public class CommandLime extends IICommand {
                                 if (matcher.find()) {
                                     Matcher mc = PATTERN.matcher(line);
                                     if (mc.find()) {
-                                        lore.set(i, LimitUtils.duraLore(mc.group() + args.get(0)));
+                                        lore.set(i, LimitUtils.limeLore(mc.group() + args.get(0)));
                                         LimitUtils.setLore(player, item, meta, lore);
-                                        ServerUtils.send(player, "append duration");
+                                        ServerUtils.send(player, "append limitime");
                                         return true;
                                     }
                                     ServerUtils.send(player, "not match");
                                     return false;
                                 }
                             }
-                            lore.add(LimitUtils.duraLore(args.get(0)));
+                            lore.add(LimitUtils.limeLore(args.get(0)));
                             LimitUtils.setLore(player, item, meta, lore);
-                            ServerUtils.send(player, "set duration");
+                            ServerUtils.send(player, "set limitime");
                         } else {
                             ServerUtils.send(player, LangKeys.format("emptyHand"));
                         }
@@ -121,7 +145,7 @@ public class CommandLime extends IICommand {
 
             @Override
             public String getUsage() {
-                return ChatColor.GOLD + "/lime append <duration>";
+                return ChatColor.GOLD + "/limit append|app|add <limitime>";
             }
         });
     }

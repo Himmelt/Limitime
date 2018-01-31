@@ -12,6 +12,7 @@ public class Config {
     private final File file;
     private final LangKeys langKeys;
     private final YamlConfiguration config = new YamlConfiguration();
+    private boolean deathGone = true;
 
     public Config(File file) {
         this.file = new File(file, "config.yml");
@@ -26,6 +27,7 @@ public class Config {
         try {
             config.load(file);
             lang = config.getString("lang");
+            deathGone = config.getBoolean("deathGone");
             if (lang == null || lang.isEmpty()) {
                 lang = "en_us";
             }
@@ -39,6 +41,7 @@ public class Config {
     public void save() {
         try {
             config.set("lang", lang);
+            config.set("deathGone", deathGone);
             config.save(file);
         } catch (Throwable e) {
             //e.printStackTrace();
@@ -57,4 +60,11 @@ public class Config {
         return this.lang;
     }
 
+    public boolean deathGone() {
+        return this.deathGone;
+    }
+
+    public void deathGone(boolean deathGone) {
+        this.deathGone = deathGone;
+    }
 }

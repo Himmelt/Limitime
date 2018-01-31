@@ -34,3 +34,4 @@ A Minecraft Bukkit Plugin, which adds using duration to item with lore.
 "§6时限部分可以为:"
 "§a§l+1h+1h+1d,§r§6全部为叠加状态."
 ```
+        // 检查 弓 在右键时(有箭/无箭)是否duration转deadline

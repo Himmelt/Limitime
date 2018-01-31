@@ -3,7 +3,7 @@ package org.soraworld.lime;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.soraworld.lime.command.CommandLime;
+import org.soraworld.lime.command.CommandLimit;
 import org.soraworld.lime.command.IICommand;
 import org.soraworld.lime.config.Config;
 import org.soraworld.lime.listener.EventListener;
@@ -20,7 +20,7 @@ public class Limitime extends JavaPlugin {
         config.load();
         config.save();
         this.getServer().getPluginManager().registerEvents(new EventListener(config), this);
-        command = new CommandLime("lime", this, config);
+        command = new CommandLimit("limit", this, config);
     }
 
     @Override
