@@ -1,11 +1,11 @@
 package org.soraworld.lime.listener;
 
-import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -17,76 +17,63 @@ import org.soraworld.lime.util.LimitUtils;
 public class EventListener implements Listener {
 
     private final Config config;
-    private static final ItemStack ITEM_AIR = new ItemStack(Material.AIR, 0);
 
     public EventListener(Config config) {
         this.config = config;
     }
 
-    @EventHandler
-    public void checkDeadline(InventoryClickEvent event) {
-        System.out.println("InventoryClickEvent" + event.getClick());
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void checkDeadline(PlayerItemDamageEvent event) {
+        if (LimitUtils.isDead(event.getPlayer().getItemInHand())) {
+            event.getPlayer().setItemInHand(null);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void checkDeadline(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            checkDeadline(event, ((Player) event.getEntity()).getInventory(), false);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void checkDeadline(PlayerItemHeldEvent event) {
         PlayerInventory inv = event.getPlayer().getInventory();
         if (LimitUtils.isDead(inv.getItem(event.getPreviousSlot()))) {
-            inv.setItem(event.getPreviousSlot(), ITEM_AIR);
+            inv.setItem(event.getPreviousSlot(), null);
         }
         if (LimitUtils.isDead(inv.getItem(event.getNewSlot()))) {
-            inv.setItem(event.getNewSlot(), ITEM_AIR);
+            inv.setItem(event.getNewSlot(), null);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void checkDeadline(PlayerInteractEvent event) {
-        checkDeadline(event, event.getPlayer().getInventory());
+        checkDeadline(event, event.getPlayer().getInventory(), config.deathGone());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void checkDuration(PlayerInteractEvent event) {
-        checkDuration(event, event.getPlayer().getInventory());
+    public void checkLimitime(PlayerInteractEvent event) {
+        checkLimitime(event, event.getPlayer().getInventory());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void checkDuration(PlayerItemDamageEvent event) {
-        checkDuration(event, event.getPlayer().getInventory());
+    public void checkLimitime(PlayerItemDamageEvent event) {
+        checkLimitime(event, event.getPlayer().getInventory());
     }
 
-    private void checkDeadline(Cancellable event, PlayerInventory inv) {
+    private void checkDeadline(Cancellable event, PlayerInventory inv, boolean deathGone) {
         if (LimitUtils.isDead(inv.getItemInHand())) {
-            inv.setItemInHand(ITEM_AIR);
-            if (config.deathGone()) event.setCancelled(true);
+            inv.setItemInHand(null);
+            if (deathGone) event.setCancelled(true);
         }
-        System.out.println(inv.getItemInHand());
-        ItemStack item = inv.getHelmet();
-        if (item != null && LimitUtils.isDead(item)) {
-            item.setAmount(0);
-            inv.setHelmet(item);
-        }
-        System.out.println(inv.getHelmet());
-        item = inv.getChestplate();
-        if (item != null && LimitUtils.isDead(item)) {
-            item.setAmount(0);
-            inv.setChestplate(item);
-        }
-        System.out.println(inv.getChestplate());
-        item = inv.getLeggings();
-        if (item != null && LimitUtils.isDead(item)) {
-            item.setAmount(0);
-            inv.setLeggings(item);
-        }
-        System.out.println(inv.getLeggings());
-        item = inv.getBoots();
-        if (item != null && LimitUtils.isDead(item)) {
-            item.setAmount(0);
-            inv.setBoots(item);
-        }
-        System.out.println(inv.getBoots());
+        if (LimitUtils.isDead(inv.getHelmet())) inv.setHelmet(null);
+        if (LimitUtils.isDead(inv.getChestplate())) inv.setChestplate(null);
+        if (LimitUtils.isDead(inv.getLeggings())) inv.setLeggings(null);
+        if (LimitUtils.isDead(inv.getBoots())) inv.setBoots(null);
     }
 
-    private void checkDuration(Cancellable event, PlayerInventory inv) {
+    private void checkLimitime(Cancellable event, PlayerInventory inv) {
         ItemStack item = inv.getItemInHand();
         if (LimitUtils.hasLimitime(item)) {
             inv.setItemInHand(item);
