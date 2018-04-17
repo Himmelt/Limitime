@@ -1,13 +1,23 @@
-apply plugin: 'java'
+buildscript {
+    ext.kotlin_version = '1.2.30'
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
-group 'org.soraworld.lime'
-version '1.7.10-0.4.2'
-description = 'Limitime Plugin'
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+group = 'org.soraworld.lime'
+version = '1.7.10-0.4.3'
 archivesBaseName = "Limitime"
 
-sourceCompatibility = targetCompatibility = '1.7'
+sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
-    sourceCompatibility = targetCompatibility = '1.7'
+    sourceCompatibility = targetCompatibility = '1.8'
 }
 
 repositories {
@@ -20,4 +30,5 @@ repositories {
 
 dependencies {
     compile 'org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT'
+    compile files('lib/Violet-1.7.10-1.2.1.jar')
 }

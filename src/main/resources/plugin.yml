@@ -1,16 +1,19 @@
 name: Limitime
-version: 1.7.10-0.4.2
+version: 1.7.10-0.4.3
 author: Himmelt
 main: org.soraworld.lime.Limitime
+depend: [Violet]
+softdepend: []
 website: https://github.com/Himmelt/Limitime
 description: Limit time using for items.
 
 commands:
-  limit:
+  limitime:
+    aliases: [lime,limit]
     description: "Limitime - https://github.com/Himmelt/Limitime"
-    usage: "[Limitime] /lime save|reload|lang|death|append|add|app"
+    usage: "/lime append|add|app"
     permission: limit.admin
-    permission-message: "[Limitime] You have no permission <limit.admin>"
+    permission-message: "You have no permission <limit.admin>"
 permissions:
-  limit.admin:
+  limitime.admin:
     default: op

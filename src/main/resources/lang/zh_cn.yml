@@ -1,7 +1,4 @@
-# ÖĞÎÄÓïÑÔÎÄ¼ş(Chinese Language File)
-# ÔÚÖĞÎÄwindowsÏµÍ³ÏÂÇëÊ¹ÓÃGB2312±àÂë(Please use GB2312 encoding on zh_CN Windows OS)
+# ä¸­æ–‡è¯­è¨€æ–‡ä»¶(Chinese Language File)
+# è¯·ä½¿ç”¨ UTF-8 ç¼–ç 
 
-language: "µ±Ç°ÓïÑÔÎª: %s ."
-configSaved: "ÅäÖÃÎÄ¼şÒÑ±£´æ."
-configReloaded: "ÅäÖÃÎÄ¼şÒÑÖØÔØ."
-deathGone: "×èÖ¹ÒÑ¹ıÊ±ÎïÆ·µÄ×îºóÒ»´ÎÊ¹ÓÃÎª: %s."
+chatHead: "[é™æ—¶ç‰©å“] "
