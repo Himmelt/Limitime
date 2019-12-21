@@ -6,7 +6,6 @@ depend: [Violet]
 softdepend: []
 website: https://github.com/Himmelt/Limitime
 description: Limit time using for items.
-
 commands:
   limitime:
     aliases: [lime,limit]

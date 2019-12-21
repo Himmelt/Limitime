@@ -1,34 +1,16 @@
-buildscript {
-    ext.kotlin_version = '1.2.30'
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 apply plugin: 'java'
-apply plugin: 'kotlin'
 
-group = 'org.soraworld.lime'
-version = '1.7.10-0.4.3'
+group = 'org.soraworld'
+version = '1.0.4'
 archivesBaseName = "Limitime"
 
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+sourceCompatibility = targetCompatibility = 1.8
 
 repositories {
     jcenter()
-    maven {
-        name = 'spigot'
-        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
-    }
+    maven { url = 'https://hub.spigotmc.org/nexus/content/groups/public/' }
 }
 
 dependencies {
-    compile 'org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT'
-    compile files('lib/Violet-1.7.10-1.2.1.jar')
+    compile 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
 }
