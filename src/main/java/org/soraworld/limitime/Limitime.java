@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -32,6 +33,7 @@ public final class Limitime extends JavaPlugin implements Listener {
     private static final Pattern PATTERN = Pattern.compile("([+-]\\d+[mhd])+");
     private static final Pattern DEADLINE = Pattern.compile("\\[deadline:[0-9-:]+]");
     private static final Pattern DURATION = Pattern.compile("\\[duration:([+-]\\d+[mhd])+]");
+    private static final Pattern LIMITIME = Pattern.compile("\\[limitime:([+-]\\d+[mhd])+]");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
     private static final Pattern DATE = Pattern.compile("[0-9]{4}(-[0-9]{2}){3}:[0-9]{2}");
 
@@ -56,7 +58,7 @@ public final class Limitime extends JavaPlugin implements Listener {
                             if (lore != null) {
                                 for (int i = 0; i < lore.size(); i++) {
                                     String line = lore.get(i);
-                                    Matcher matcher = DEADLINE.matcher(line)
+                                    Matcher matcher = DEADLINE.matcher(line);
                                     if (matcher.find()) {
                                         Matcher mc = DATE.matcher(line);
                                         if (mc.find()) {
@@ -66,7 +68,7 @@ public final class Limitime extends JavaPlugin implements Listener {
                                                 lore.set(i, deadLore(date));
                                                 setLore(player, item, meta, lore);
                                                 // config.send(player, "append deadline");
-                                                return true
+                                                return true;
                                             } catch (Throwable e) {
                                                 // config.send(player, "parseException")
                                             }
@@ -76,7 +78,7 @@ public final class Limitime extends JavaPlugin implements Listener {
                                     }
                                     matcher = DURATION.matcher(line);
                                     if (matcher.find()) {
-                                        Matcher mc = PATTERN.matcher(line)
+                                        Matcher mc = PATTERN.matcher(line);
                                         if (mc.find()) {
                                             lore.set(i, limeLore(mc.group() + args[0]));
                                             setLore(player, item, meta, lore);
@@ -103,87 +105,95 @@ public final class Limitime extends JavaPlugin implements Listener {
     }
 
     public int parse(String exp) {
-        val last = exp.length - 1
-        var `val` =Integer.valueOf(exp.substring(1, last))
-        if (exp[0] == '-') `val` *=-1
-        if (exp[last] == 'h') `val` *=60
-        if (exp[last] == 'd') `val` *=1440
-        return `val`
+        int last = exp.length() - 1;
+        int val = Integer.parseInt(exp.substring(1, last));
+        if (exp.charAt(0) == '-') {
+            val *= -1;
+        }
+        if (exp.charAt(last) == 'h') {
+            val *= 60;
+        }
+        if (exp.charAt(last) == 'd') {
+            val *= 1440;
+        }
+        return val;
     }
 
     public long limitime(String limitime) {
-        var time:Long = 0
-        val matcher = PATTERN.matcher(limitime)
+        long time = 0;
+        Matcher matcher = PATTERN.matcher(limitime);
         while (matcher.find()) {
-            time += parse(matcher.group()).toLong()
+            time += parse(matcher.group());
         }
-        return time * 60000
+        return time * 60000;
     }
 
     private boolean deadline(String deadline) {
-        val matcher = DATE.matcher(deadline)
+        Matcher matcher = DATE.matcher(deadline);
         if (matcher.find()) {
             try {
-                if (DATE_FORMAT.parse(matcher.group()).before(Date())) {
-                    return true
+                if (DATE_FORMAT.parse(matcher.group()).before(new Date())) {
+                    return true;
                 }
-            } catch (e:Throwable){
-                println("parseException$deadline")
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
 
         }
-        return false
+        return false;
     }
 
     public String deadLore(Date date) {
-        return "[deadline:" + DATE_FORMAT.format(date) + "]"
+        return "[deadline:" + DATE_FORMAT.format(date) + "]";
     }
 
     public String limeLore(String limitime) {
-        return "[limitime:$limitime]"
+        return "[limitime:$limitime]";
     }
 
     public void setLore(Player player, ItemStack item, ItemMeta meta, List<String> lore) {
-        meta.lore = lore;
-        item.itemMeta = meta;
-        player.itemInHand = item;
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        player.setItemInHand(item);
     }
 
     public boolean isDead(ItemStack item) {
-        if (item == null || item.itemMeta == null) return false
-        val lore = item.itemMeta.lore
-        var i = 0
-        while (lore != null && i < lore.size) {
-            val line = lore[i]
-            val matcher = DEADLINE.matcher(line)
-            if (matcher.find() && deadline(matcher.group())) {
-                return true
-            }
-            i++
+        if (item == null || item.getItemMeta() == null) {
+            return false;
         }
-        return false
+        List<String> lore = item.getItemMeta().getLore();
+        int i = 0;
+        while (lore != null && i < lore.size()) {
+            String line = lore.get(i);
+            Matcher matcher = DEADLINE.matcher(line);
+            if (matcher.find() && deadline(matcher.group())) {
+                return true;
+            }
+            i++;
+        }
+        return false;
     }
 
     public boolean hasLimitime(ItemStack item) {
-        if (item != null && item.itemMeta != null) {
-            val meta = item.itemMeta
-            val lore = meta.lore
-            var i = 0
-            while (lore != null && i < lore.size) {
-                val line = lore[i]
-                val matcher = LIMITIME.matcher(line)
+        if (item != null && item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            List<String> lore = meta.getLore();
+            int i = 0;
+            while (lore != null && i < lore.size()) {
+                String line = lore.get(i);
+                Matcher matcher = LIMITIME.matcher(line);
                 if (matcher.find()) {
-                    val date = Date()
-                    date.time = date.time + limitime(matcher.group())
-                    lore[i] = deadLore(date)
-                    meta.lore = lore
-                    item.itemMeta = meta
-                    return true
+                    Date date = new Date();
+                    date.setTime(date.getTime() + limitime(matcher.group()));
+                    lore.set(i, deadLore(date));
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                    return true;
                 }
-                i++
+                i++;
             }
         }
-        return false
+        return false;
     }
 
 
@@ -192,32 +202,32 @@ public final class Limitime extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void checkDeadline(PlayerItemDamageEvent event) {
-        if (LimitUtils.isDead(event.getPlayer().getItemInHand())) {
-            event.player.itemInHand = null
+        if (isDead(event.getPlayer().getItemInHand())) {
+            event.getPlayer().setItemInHand(null);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void checkDeadline(EntityDamageEvent event) {
-        if (event.entity instanceof Player) {
-            checkDeadline(event, (event.entity as Player).inventory, false)
+        if (event.getEntity() instanceof Player) {
+            checkDeadline(event, ((Player) event.getEntity()).getInventory(), false);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void checkDeadline(PlayerItemHeldEvent event) {
-        val inv = event.getPlayer().getInventory();
-        if (LimitUtils.isDead(inv.getItem(event.previousSlot))) {
-            inv.setItem(event.previousSlot, null)
+        Inventory inv = event.getPlayer().getInventory();
+        if (isDead(inv.getItem(event.getPreviousSlot()))) {
+            inv.setItem(event.getPreviousSlot(), null);
         }
-        if (LimitUtils.isDead(inv.getItem(event.newSlot))) {
-            inv.setItem(event.newSlot, null)
+        if (isDead(inv.getItem(event.getNewSlot()))) {
+            inv.setItem(event.getNewSlot(), null);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void checkDeadline(PlayerInteractEvent event) {
-        checkDeadline(event, event.getPlayer().getInventory(), config.deathGone);
+        checkDeadline(event, event.getPlayer().getInventory(), false/*config.deathGone*/);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -227,33 +237,51 @@ public final class Limitime extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void checkLimitime(PlayerItemDamageEvent event) {
-        checkLimitime(event, event.player.inventory);
+        checkLimitime(event, event.getPlayer().getInventory());
     }
 
     private void checkDeadline(Cancellable event, PlayerInventory inv, boolean deathGone) {
         if (isDead(inv.getItemInHand())) {
             inv.setItemInHand(null);
-            if (deathGone) event.isCancelled = true;
+            if (deathGone) {
+                event.setCancelled(true);
+            }
         }
-        if (isDead(inv.helmet)) inv.helmet = null;
-        if (isDead(inv.chestplate)) inv.chestplate = null;
-        if (isDead(inv.leggings)) inv.leggings = null;
-        if (isDead(inv.boots)) inv.boots = null;
+        if (isDead(inv.getHelmet())) {
+            inv.setHelmet(null);
+        }
+        if (isDead(inv.getChestplate())) {
+            inv.setChestplate(null);
+        }
+        if (isDead(inv.getLeggings())) {
+            inv.setLeggings(null);
+        }
+        if (isDead(inv.getBoots())) {
+            inv.setBoots(null);
+        }
     }
 
     private void checkLimitime(Cancellable event, PlayerInventory inv) {
-        var item = inv.getItemInHand();
-        if (LimitUtils.hasLimitime(item)) {
-            inv.itemInHand = item
-            event.isCancelled = true
+        ItemStack item = inv.getItemInHand();
+        if (hasLimitime(item)) {
+            inv.setItemInHand(item);
+            event.setCancelled(true);
         }
-        item = inv.helmet
-        if (hasLimitime(item)) inv.helmet = item;
-        item = inv.chestplate
-        if (hasLimitime(item)) inv.chestplate = item;
-        item = inv.leggings
-        if (hasLimitime(item)) inv.leggings = item;
-        item = inv.boots
-        if (hasLimitime(item)) inv.boots = item;
+        item = inv.getHelmet();
+        if (hasLimitime(item)) {
+            inv.setHelmet(item);
+        }
+        item = inv.getChestplate();
+        if (hasLimitime(item)) {
+            inv.setChestplate(item);
+        }
+        item = inv.getLeggings();
+        if (hasLimitime(item)) {
+            inv.setLeggings(item);
+        }
+        item = inv.getBoots();
+        if (hasLimitime(item)) {
+            inv.setBoots(item);
+        }
     }
 }
