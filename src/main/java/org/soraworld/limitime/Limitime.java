@@ -1,6 +1,7 @@
 package org.soraworld.limitime;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,12 +26,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author Himmelt
+ */
 public final class Limitime extends JavaPlugin implements Listener {
 
     private static final String PLUGIN_ID = "limitime";
     private static final String PLUGIN_NAME = "Limitime";
     private static final String PERM_ADMIN = "limitime.admin";
-    private static final Pattern PATTERN = Pattern.compile("([+-]\\d+[mhd])+");
+    private static final Pattern DURATION_ARG = Pattern.compile("([+-]\\d+[mhd])+");
     private static final Pattern DEADLINE = Pattern.compile("\\[deadline:[0-9-:]+]");
     private static final Pattern DURATION = Pattern.compile("\\[duration:([+-]\\d+[mhd])+]");
     private static final Pattern LIMITIME = Pattern.compile("\\[limitime:([+-]\\d+[mhd])+]");
@@ -44,55 +48,87 @@ public final class Limitime extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player && args.length >= 1) {
+        if (sender instanceof Player && args.length >=1) {
             Player player = (Player) sender;
-            switch (args[0]) {
-                case "append":
-                case "add":
-                case "plus": {
-                    if (args.length == 1 && PATTERN.matcher(args[0]).matches()) {
-                        ItemStack item = player.getItemInHand();
-                        if (item != null) {
-                            ItemMeta meta = item.getItemMeta();
-                            List<String> lore = meta.getLore();
-                            if (lore != null) {
-                                for (int i = 0; i < lore.size(); i++) {
-                                    String line = lore.get(i);
-                                    Matcher matcher = DEADLINE.matcher(line);
-                                    if (matcher.find()) {
-                                        Matcher mc = DATE.matcher(line);
-                                        if (mc.find()) {
-                                            try {
-                                                Date date = DATE_FORMAT.parse(mc.group());
-                                                date.setTime(date.getTime() + limitime(args[0]));
-                                                lore.set(i, deadLore(date));
-                                                setLore(player, item, meta, lore);
-                                                // config.send(player, "append deadline");
-                                                return true;
-                                            } catch (Throwable e) {
-                                                // config.send(player, "parseException")
-                                            }
+
+            ItemStack stack = player.getItemInHand();
+
+            if (stack==null || stack.getType()==null||stack.getType()== Material.AIR){
+                player.sendMessage("请手持一个有效物品.");
+                return true;
+            }
+
+            if (args.length==1){
+                switch (args[0]){
+                    case "time":
+
+                        break;
+                    case "dead":
+                        break;
+                    default:
+                        player.sendMessage(command.getUsage());
+                }
+                return true;
+            }
+
+            switch (args[0]){
+                case "time":
+                    String time = args[1];
+                    if (DURATION_ARG.matcher(time).matches()){
+                        ItemMeta meta = stack.getItemMeta();
+                        List<String> lore = meta.getLore();
+                        if (lore != null) {
+                            for (int i = 0; i < lore.size(); i++) {
+                                String line = lore.get(i);
+                                Matcher matcher = DEADLINE.matcher(line);
+                                if (matcher.find()) {
+                                    Matcher mc = DATE.matcher(line);
+                                    if (mc.find()) {
+                                        try {
+                                            Date date = DATE_FORMAT.parse(mc.group());
+                                            date.setTime(date.getTime() + limitime(args[0]));
+                                            lore.set(i, deadLore(date));
+                                            setLore(player, item, meta, lore);
+                                            // config.send(player, "append deadline");
+                                            return true;
+                                        } catch (Throwable e) {
+                                            // config.send(player, "parseException")
                                         }
-                                        // config.send(player, "invalid date format");
+                                    }
+                                    // config.send(player, "invalid date format");
+                                    return true;
+                                }
+                                matcher = DURATION.matcher(line);
+                                if (matcher.find()) {
+                                    Matcher mc = DURATION_ARG.matcher(line);
+                                    if (mc.find()) {
+                                        lore.set(i, limeLore(mc.group() + args[0]));
+                                        setLore(player, item, meta, lore);
+                                        // config.send(player, "append limitime");
                                         return true;
                                     }
-                                    matcher = DURATION.matcher(line);
-                                    if (matcher.find()) {
-                                        Matcher mc = PATTERN.matcher(line);
-                                        if (mc.find()) {
-                                            lore.set(i, limeLore(mc.group() + args[0]));
-                                            setLore(player, item, meta, lore);
-                                            // config.send(player, "append limitime");
-                                            return true;
-                                        }
-                                        // config.send(player, "not match")
-                                        return false;
-                                    }
+                                    // config.send(player, "not match")
+                                    return false;
                                 }
-                                lore.add(limeLore(args[0]));
-                                setLore(player, item, meta, lore);
-                                // config.send(player, "set limitime");
                             }
+                            lore.add(limeLore(args[0]));
+                            setLore(player, item, meta, lore);
+                            // config.send(player, "set limitime");
+                        }
+                    }
+                    break;
+                case "dead":
+                    break;
+                default:
+                    player.sendMessage(command.getUsage());
+            }
+
+            switch (args[0]) {
+                case "+": {
+                    if (args.length == 1 && DURATION_ARG.matcher(args[0]).matches()) {
+                        ItemStack item = player.getItemInHand();
+                        if (item != null) {
+
 
                         } else {
                             // config.send(player, "emptyHand")
@@ -121,7 +157,7 @@ public final class Limitime extends JavaPlugin implements Listener {
 
     public long limitime(String limitime) {
         long time = 0;
-        Matcher matcher = PATTERN.matcher(limitime);
+        Matcher matcher = DURATION_ARG.matcher(limitime);
         while (matcher.find()) {
             time += parse(matcher.group());
         }

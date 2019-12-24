@@ -6,7 +6,9 @@ website: https://github.com/Himmelt/Limitime
 description: Limit time using for items.
 commands:
   limitime:
-    aliases: [limit]
+    aliases:
+      - lim
+      - limit
     description: "Limitime - https://github.com/Himmelt/Limitime"
     usage: "/limit append|add|plus"
     permission: limitime.admin
